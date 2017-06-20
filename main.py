@@ -10,6 +10,12 @@ page_header = """
 <html>
     <head>
         <title>FlickList</title>
+        <style>
+            .error {
+                color:red;
+                font-weight: 700;
+            }
+        </style>
     </head>
     <body>
         <h1>FlickList</h1>
@@ -91,13 +97,17 @@ def add_movie():
 
     # TODO 
     # 'escape' the user's input so that if they typed HTML, it doesn't mess up our site
-    
+    new_movie = cgi.escape(new_movie)
     # TODO 
     # if the user typed nothing at all, redirect and tell them the error
-
+    if new_movie == '':
+        error = "Please specify a movie title!"
+        return redirect('/?error=Please specify a movie title!')
     # TODO 
     # if the user wants to add a terrible movie, redirect and tell them not to add it b/c it sucks
-
+    for movie in terrible_movies:
+        if new_movie == movie:
+            return redirect('/?error=Trust me, you don\'t want to add {0} to your Watchlist.'.format(movie))
     # build response content
     new_movie_element = "<strong>" + new_movie + "</strong>"
     sentence = new_movie_element + " has been added to your Watchlist!"
@@ -119,7 +129,7 @@ def index():
         error_element = ''
 
     # combine all the pieces to build the content of our response
-    main_content = edit_header + add_form + crossoff_form + error_element
+    main_content = edit_header + add_form + error_element + crossoff_form 
 
 
     # build the response string
